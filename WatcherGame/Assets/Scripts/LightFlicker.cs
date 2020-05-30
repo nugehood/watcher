@@ -8,6 +8,7 @@ public class LightFlicker : MonoBehaviour
     public float intensity;
     public float seconds;
 
+
     // Start is called before the first frame update
     void Start()
     {
