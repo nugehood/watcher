@@ -6,6 +6,7 @@ public class RayCastObjectName : MonoBehaviour
 {
     
     public GameObject objectText;
+    [HideInInspector]
     public bool isCast;
 
     // Update is called once per frame

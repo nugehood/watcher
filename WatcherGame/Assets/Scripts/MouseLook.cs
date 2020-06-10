@@ -4,23 +4,37 @@ using UnityEngine;
 
 public class MouseLook : MonoBehaviour
 {
+    
+
     Movement playerMovement;
     [Tooltip("Adjust mouse Sensitivity")]
+    [Range(60,100)]
     public float MouseSensitivity;
     [Space]
     [Tooltip("Put player transform component here!")]
     public Transform playerBody;
     float xRot = 0f;
     RotatingObject rotationObj;
+
+    public bool invertMouse;
+
+    lightSwitchScript lightSwitch;
+
     bool camRotation;
-    [HideInInspector]
-    public RayCastObjectName castobjName;
-    [HideInInspector]
-    public GameObject getCastObj;
+    bool isUseTelescope;
+    
+    RayCastObjectName castobjName;
+   
+    GameObject getCastObj;
+
+    telescopeScript teleScript;
+
+    public pauseScript pausescript;
 
     // Start is called before the first frame update
     void Start()
     {
+        
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<Movement>();
         camRotation = true;
         //Invisible cursor and locking state
@@ -31,7 +45,8 @@ public class MouseLook : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+
         //If camera rotation is Enable
         if (camRotation)
         {
@@ -43,7 +58,15 @@ public class MouseLook : MonoBehaviour
             playerBody.Rotate(Vector3.up * mouseX);
 
             //Rotation value
-            xRot -= mouseY;
+            if (!invertMouse)
+            {
+                xRot -= mouseY;
+            }
+
+            else if (invertMouse)
+            {
+                xRot += mouseY;
+            }
             //Clamping the rotation value or the value of xRot to only be able to exceed only the given minimum 
             //and maximum value
             xRot = Mathf.Clamp(xRot, -90f, 90f);
@@ -62,6 +85,51 @@ public class MouseLook : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit,5))
         {
+            //If raycast hit rotateable then you can rotate object
+            //Disabling movement and Camera rotation
+            if (hit.collider.CompareTag("rotateable"))
+            {
+                rotationObj = hit.collider.GetComponent<RotatingObject>();
+                if (Input.GetMouseButtonDown(0)) { 
+                playerMovement.enabled = false;
+                camRotation = false;
+                rotationObj.enabled = true;
+                }
+                //If hit telescope
+                if (Input.GetMouseButtonDown(0) && hit.collider.GetComponent<telescopeScript>())
+                {
+                    pausescript.abletoPause = false;
+                    teleScript = hit.collider.GetComponent<telescopeScript>();
+                    teleScript.enabled = true;
+                    teleScript.telescopeCam.enabled = true;
+                    teleScript.telescopeImg.SetActive(true);
+                }
+
+            }
+            
+            //Lightswitch turning on and of
+            
+            if (hit.collider.CompareTag("lightswitch"))
+            {
+                
+                lightSwitch = hit.collider.GetComponent<lightSwitchScript>();
+
+                //If light is on
+                if (Input.GetMouseButtonDown(0)&&lightSwitch.isOn){
+
+                    lightSwitch.isOn = false;
+
+                }
+
+                //If light is off
+                else if (Input.GetMouseButtonDown(0) &&!lightSwitch.isOn)
+                {
+
+                    lightSwitch.isOn = true;
+
+                }
+
+            }
             //Checking if it has RayCastObjectName
             if(hit.collider.GetComponents<RayCastObjectName>() != null)
             {
@@ -82,20 +150,7 @@ public class MouseLook : MonoBehaviour
                 getCastObj.SetActive(false);
             }
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                //If raycast hit rotateable then you can rotate object
-                //Disabling movement and Camera rotation
-                
-                if (hit.collider.CompareTag("rotateable"))
-                {
-                    playerMovement.enabled = false;
-                    camRotation = false;
-                    rotationObj = hit.collider.GetComponent<RotatingObject>();
-                    rotationObj.enabled = true;
-                    
-                }
-            }
+
         }
         //If you can rotateObject then disbale Raycastobject text GameObject
         if (rotationObj.enabled)
@@ -109,11 +164,22 @@ public class MouseLook : MonoBehaviour
         //Allowing movement and camera movement
         if (rotationObj.enabled&&Input.GetMouseButtonDown(1))
         {
+            pausescript.abletoPause = true;
             playerMovement.enabled = true;
             camRotation = true;
             rotationObj.enabled = false;
             rotationObj = null;
         }
+
+        if(teleScript.enabled == true&& Input.GetKeyDown(KeyCode.E) | Input.GetMouseButtonDown(1))
+        {
+            Camera.main.enabled = true;
+            teleScript.enabled = false;
+            teleScript.telescopeCam.enabled = false;
+            teleScript.telescopeImg.SetActive(false);
+        }
+
+       
 
     }
 }

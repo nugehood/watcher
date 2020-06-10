@@ -29,6 +29,7 @@ public class RotatingObject : MonoBehaviour
         yRot -= mouseX;
         //Rotation Limit
         xRot = Mathf.Clamp(xRot, -90f, 90f);
+        
 
         transform.localRotation = Quaternion.Euler(xRot, yRot, 90f);
 
