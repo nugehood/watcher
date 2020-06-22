@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class phoneScript : MonoBehaviour
 {
+
     [HideInInspector]
     public bool ableToUsePhone;
 
@@ -31,6 +32,7 @@ public class phoneScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         //Phone animation coming on screen State
         animator.SetBool("in", outPar);
         
@@ -91,6 +93,7 @@ public class phoneScript : MonoBehaviour
         appOrder = appVal;
     }
 
+    
 
 
 

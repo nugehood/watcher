@@ -26,7 +26,7 @@ public class telescopeScript : MonoBehaviour
         xRot += mouseY;
         yRot += mouseX;
         //Rotation Limit
-        xRot = Mathf.Clamp(xRot, -20f, 20f);
+        xRot = Mathf.Clamp(xRot, -20f, 100f);
         yRot = Mathf.Clamp(yRot, -180f, -23f);
 
 
@@ -34,7 +34,7 @@ public class telescopeScript : MonoBehaviour
         transform.localRotation = Quaternion.Euler(xRot, yRot, 90f);
 
         //Telescope zoom Min and Max
-        telescopeCam.fieldOfView = Mathf.Clamp(telescopeCam.fieldOfView, 50,80);
+        telescopeCam.fieldOfView = Mathf.Clamp(telescopeCam.fieldOfView, 50,160);
         
         if (Input.mouseScrollDelta.y < 0f)
         {

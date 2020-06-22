@@ -7,6 +7,7 @@ public class lightSwitchScript : MonoBehaviour
 {
     Animator animator;
     public Light lighting;
+    public AudioClip switchOn,switchOff;
     [HideInInspector]
     public bool isOn;
     

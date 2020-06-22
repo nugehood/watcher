@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class MouseLook : MonoBehaviour
 {
-    
+
+
+    public AudioSource SFXsource;
 
     Movement playerMovement;
     [Tooltip("Adjust mouse Sensitivity")]
@@ -16,6 +18,8 @@ public class MouseLook : MonoBehaviour
     float xRot = 0f;
     RotatingObject rotationObj;
 
+    Camera thisCam;
+
     public bool invertMouse;
 
     lightSwitchScript lightSwitch;
@@ -24,17 +28,21 @@ public class MouseLook : MonoBehaviour
     bool isUseTelescope;
     
     RayCastObjectName castobjName;
-   
+
+    RayCastBoolMsg boolRaycast;
+
     GameObject getCastObj;
 
     telescopeScript teleScript;
+
+    public phoneScript telephone;
 
     public pauseScript pausescript;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        thisCam = GetComponent<Camera>();
         playerMovement = GameObject.FindGameObjectWithTag("Player").GetComponent<Movement>();
         camRotation = true;
         //Invisible cursor and locking state
@@ -81,7 +89,7 @@ public class MouseLook : MonoBehaviour
         }
         //Raycast in the middle of viewport
         Ray ray;
-        ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        ray = thisCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit,5))
         {
@@ -98,10 +106,12 @@ public class MouseLook : MonoBehaviour
                 //If hit telescope
                 if (Input.GetMouseButtonDown(0) && hit.collider.GetComponent<telescopeScript>())
                 {
+                    telephone.ableToUsePhone = false;
                     pausescript.abletoPause = false;
                     teleScript = hit.collider.GetComponent<telescopeScript>();
                     teleScript.enabled = true;
                     teleScript.telescopeCam.enabled = true;
+                    thisCam.enabled = false;
                     teleScript.telescopeImg.SetActive(true);
                 }
 
@@ -113,11 +123,11 @@ public class MouseLook : MonoBehaviour
             {
                 
                 lightSwitch = hit.collider.GetComponent<lightSwitchScript>();
-
                 //If light is on
                 if (Input.GetMouseButtonDown(0)&&lightSwitch.isOn){
 
                     lightSwitch.isOn = false;
+                    SFXsource.PlayOneShot(lightSwitch.switchOff);
 
                 }
 
@@ -126,7 +136,7 @@ public class MouseLook : MonoBehaviour
                 {
 
                     lightSwitch.isOn = true;
-
+                    SFXsource.PlayOneShot(lightSwitch.switchOn);
                 }
 
             }
@@ -150,6 +160,17 @@ public class MouseLook : MonoBehaviour
                 getCastObj.SetActive(false);
             }
 
+            //Display object message on worldspace canvas
+            if (hit.collider.GetComponent<RayCastBoolMsg>() != null)
+            {
+                boolRaycast = hit.collider.GetComponent<RayCastBoolMsg>();
+                if (Input.GetMouseButtonDown(0))
+                {
+                    boolRaycast.cast = true;
+                }
+            }
+
+
 
         }
         //If you can rotateObject then disbale Raycastobject text GameObject
@@ -164,16 +185,20 @@ public class MouseLook : MonoBehaviour
         //Allowing movement and camera movement
         if (rotationObj.enabled&&Input.GetMouseButtonDown(1))
         {
-            pausescript.abletoPause = true;
+            Debug.Log("He");
             playerMovement.enabled = true;
             camRotation = true;
             rotationObj.enabled = false;
             rotationObj = null;
+            telephone.ableToUsePhone = true;
+            pausescript.abletoPause = true;
         }
 
         if(teleScript.enabled == true&& Input.GetKeyDown(KeyCode.E) | Input.GetMouseButtonDown(1))
         {
-            Camera.main.enabled = true;
+            Debug.Log("He");
+            rotationObj = null;
+            thisCam.enabled = true;
             teleScript.enabled = false;
             teleScript.telescopeCam.enabled = false;
             teleScript.telescopeImg.SetActive(false);

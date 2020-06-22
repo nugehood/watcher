@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 public class optionScript : MonoBehaviour
 {
+    [Tooltip("Disable cursor or not? Apply this mainly for main Menu")]
+    public bool disableCursor;
+
     [Header("Mouse Option")]
     //Mouse Variable
     [Tooltip("Put your MouseLook variable here for chaning camera movement, etc")]
@@ -16,6 +20,7 @@ public class optionScript : MonoBehaviour
 
     [Tooltip("Toggle from MouseOptions")]
     public Toggle mouseinvertToggle;
+
 
     [HideInInspector]
     public bool mouseInvert;
@@ -46,8 +51,10 @@ public class optionScript : MonoBehaviour
     [Tooltip("Slider from audio option!")]
     public Slider ambientSlider, fxSlider;
 
-    
+    [Space]
+    public phoneScript phonescript;
 
+    
     
     // Start is called before the first frame update
     void Start()
@@ -129,16 +136,23 @@ public class optionScript : MonoBehaviour
         //Allow camera movement
         cameraScript.enabled = true;
 
+        if (disableCursor)
+        {
         //Don't show cursor
         Cursor.visible = false;
+
+        //Lock cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        }
 
         //Unmute audio
         mixer.SetFloat("masterVol", 0);
 
-        //Lock cursor
-        Cursor.lockState = CursorLockMode.Locked;
 
         pausescript.isPaused = false;
+
+        //Able to use phone
+        phonescript.ableToUsePhone = true;
 
         //Revert back to normal time
         Time.timeScale = 1f;
@@ -147,8 +161,8 @@ public class optionScript : MonoBehaviour
     //Default setting method put in Default button onClick()
     public void defaultSetting()
     {
-        ambientSlider.value = 1;
-        fxSlider.value = 0.4805348f;
+        ambientSlider.value = 0.43f;
+        fxSlider.value = 0.22f;
 
         screenResIndex = 0;
         fullscreenToggle.isOn = true;
@@ -158,6 +172,14 @@ public class optionScript : MonoBehaviour
 
 
     }
+
+    public void quitMenu()
+    {
+        mixer.SetFloat("masterVol", 0);
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    
 
      
 }
